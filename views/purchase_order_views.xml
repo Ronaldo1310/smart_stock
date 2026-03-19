@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_form_inherit_smart_stock" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.smart.stock</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_auto_generated" widget="boolean_toggle" readonly="1"
+                       invisible="is_auto_generated == False"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_requisition_form_inherit_smart_stock" model="ir.ui.view">
+        <field name="name">purchase.requisition.form.inherit.smart.stock</field>
+        <field name="model">purchase.requisition</field>
+        <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_auto_generated" widget="boolean_toggle" readonly="1"
+                       invisible="is_auto_generated == False"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_tree_inherit_smart_stock" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit.smart.stock</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_auto_generated" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
