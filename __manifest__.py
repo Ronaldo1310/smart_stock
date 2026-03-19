@@ -16,7 +16,7 @@ Key Features:
 - **High-Performance Dashboard:** Includes a SQL-backed dynamic dashboard to analyze revenue, product rotation, and performance without slowing down the ORM.
     """,
     'author': 'Freddy Torres - Lixie Studio Digital, C.A.',
-    'website': 'https://lixie.io',
+    'website': 'https://www.lixie.io',
     'depends': [
         'base', 
         'stock', 

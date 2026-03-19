@@ -20,7 +20,7 @@ Transform your standard Odoo inventory into a dynamic, data-driven supply chain 
 ## 👨‍💻 Author & Support
 * **Author:** Freddy Torres
 * **Company:** Lixie Studio Digital, C.A.
-* **Website:** [lixie.io](https://lixie.io)
+* **Website:** [www.lixie.io](https://www.lixie.io)
 
 ---
 
@@ -44,4 +44,4 @@ Transforma tu inventario estándar de Odoo en un motor de cadena de suministro d
 ## 👨‍💻 Autor y Soporte
 * **Autor:** Freddy Torres
 * **Empresa:** Lixie Studio Digital, C.A.
-* **Sitio Web:** [lixie.io](https://lixie.io)
+* **Sitio Web:** [www.lixie.io](https://www.lixie.io)
