@@ -41,7 +41,7 @@ Key Features:
     },
     
     
-    'images': ['static/description/banner.png'], 
+    'images': ['static/description/banner_screenshot.png'], 
     'price': 149.00,
     'currency': 'USD',
     'license': 'OPL-1', 
