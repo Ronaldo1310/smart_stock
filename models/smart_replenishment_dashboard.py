@@ -117,16 +117,16 @@ class SmartReplenishmentDashboard(models.Model):
         # 1. KPIs
         total_products = self.env['product.product'].search_count([('type', '=', 'product')])
         
-        # Valoración aproximada del inventario (Stock x Costo)
-        self.env.cr.execute("""
-            SELECT SUM(pp.qty_available * pt.standard_price) 
-            FROM product_product pp 
-            JOIN product_template pt ON pp.product_tmpl_id = pt.id 
-            WHERE pt.type = 'product' AND pp.qty_available > 0
-        """)
-        total_valuation = self.env.cr.fetchone()[0] or 0.0
+        # CORRECCIÓN: Usamos el ORM para la valoración porque 'qty_available' es calculado.
+        # Buscamos productos que tengan stock positivo y multiplicamos por su costo.
+        products_in_stock = self.env['product.product'].search([
+            ('type', '=', 'product'), 
+            ('qty_available', '>', 0)
+        ])
+        total_valuation = sum(p.qty_available * p.standard_price for p in products_in_stock)
 
         # Valor de las Órdenes de Compra Automáticas en Borrador
+        # (amount_total sí es una columna real en BD, así que el SQL rápido funciona perfecto aquí)
         self.env.cr.execute("""
             SELECT SUM(amount_total) 
             FROM purchase_order 
