@@ -1,6 +1,6 @@
 {
     'name': 'Smart Stock Replenishment',
-    'version': '17.0.1.0.0',
+    'version': '18.0.1.0.0',
     'category': 'Inventory/Inventory',
     'summary': 'Data-driven inventory replenishment, demand forecasting, and automated purchasing.',
     'description': """

@@ -55,11 +55,11 @@
         <field name="context">{'search_default_this_month': 1}</field>
     </record>
 
-    <record id="view_product_replenish_tree" model="ir.ui.view">
-        <field name="name">product.replenish.tree.smart.stock</field>
+    <record id="view_product_replenish_list" model="ir.ui.view">
+        <field name="name">product.replenish.list.smart.stock</field>
         <field name="model">product.product</field>
         <field name="arch" type="xml">
-            <tree string="Requires Replenishment" decoration-danger="qty_available &lt;= 0">
+            <list string="Requires Replenishment" decoration-danger="qty_available &lt;= 0">
                 <field name="default_code"/>
                 <field name="name"/>
                 <field name="rotation_classification" optional="show"/>
@@ -67,7 +67,7 @@
                 <field name="current_forecasted_demand" string="Demand (Current)"/>
                 <field name="last_forecasted_demand" string="Lawsuit (Previous)" optional="hide"/>
                 <field name="last_purchase_cost" string="Last Purchase Cost" widget="monetary"/>
-            </tree>
+            </list>
         </field>
     </record>
 
