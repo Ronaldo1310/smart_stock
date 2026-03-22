@@ -63,10 +63,10 @@
                 <field name="default_code"/>
                 <field name="name"/>
                 <field name="rotation_classification" optional="show"/>
-                <field name="qty_available" string="Stock Actual"/>
-                <field name="current_forecasted_demand" string="Demanda (Actual)"/>
-                <field name="last_forecasted_demand" string="Demanda (Anterior)" optional="hide"/>
-                <field name="last_purchase_cost" string="Último Costo" widget="monetary"/>
+                <field name="qty_available" string="Current Stock"/>
+                <field name="current_forecasted_demand" string="Demand (Current)"/>
+                <field name="last_forecasted_demand" string="Lawsuit (Previous)" optional="hide"/>
+                <field name="last_purchase_cost" string="Last Purchase Cost" widget="monetary"/>
             </tree>
         </field>
     </record>
