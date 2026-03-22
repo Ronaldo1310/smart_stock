@@ -9,7 +9,6 @@
             <field name="code">model._cron_log_daily_stockouts()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now().replace(hour=23, minute=50, second=0)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
         </record>
@@ -21,7 +20,6 @@
             <field name="code">model._cron_calculate_demand_forecast()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=1, minute=0, second=0).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
         </record>
@@ -33,7 +31,6 @@
             <field name="code">model._cron_generate_smart_replenishment()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=2, minute=0, second=0).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
         </record>
@@ -45,7 +42,6 @@
             <field name="code">model._cron_reclassify_abc()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">months</field>
-            <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=3, minute=0, second=0).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
         </record>
