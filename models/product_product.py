@@ -1,3 +1,4 @@
+import math
 from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
 from datetime import date
@@ -5,133 +6,142 @@ from datetime import date
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    # Factor Alpha configurable por producto (por defecto 0.3 es un buen estándar)
     smoothing_alpha = fields.Float(
-        string='Factor de Suavizado (Alpha)', 
+        string='Smoothing Factor (Alpha)', 
         default=0.3,
-        help='Valor entre 0 y 1. Valores altos dan más peso a ventas recientes.'
+        help='Value between 0 and 1. Higher values give more weight to recent sales.'
     )
     
-    # Proyección anterior (Ft)
     last_forecasted_demand = fields.Float(
-        string='Proyección Anterior (Diaria)', 
+        string='Previous Forecast (Daily)', 
         default=0.0,
         readonly=True
     )
     
-    # Proyección actual calculada (Ft+1)
     current_forecasted_demand = fields.Float(
-        string='Proyección Actual (Diaria)', 
+        string='Current Forecast (Daily)', 
         default=0.0,
         readonly=True
     )
-
-
+    
+    last_purchase_cost = fields.Float(
+        string='Last Purchase Price',
+        default=0.0,
+        help='Unit price registered in the last confirmed Purchase Order.'
+    )
 
     @api.model
     def _cron_generate_smart_replenishment(self, days_to_cover=30):
-        """
-        Evalúa el stock actual contra la demanda proyectada y crea 
-        Órdenes de Compra o Licitaciones según corresponda.
-        """
-        # Buscamos productos con demanda proyectada y que tengan proveedores configurados
         products = self.search([
             ('type', '=', 'product'), 
             ('current_forecasted_demand', '>', 0),
             ('seller_ids', '!=', False)
         ])
 
-        # Agruparemos las compras de proveedor único para no hacer 100 POs al mismo proveedor
         po_lines_by_supplier = {}
         tenders_to_create = []
 
         for product in products:
             demand = product.current_forecasted_demand
             sellers = product.seller_ids
-            primary_seller = sellers[0] # Tomamos el proveedor principal como referencia para tiempos
+            primary_seller = sellers[0]
             
-            # 1. Variables del Proveedor y Producto
             lead_time = primary_seller.delay
             moq = primary_seller.min_qty
             safety_stock_qty = demand * product.safety_stock_days
-            
-            # 2. Calcular ROP (Punto de Reorden)
             rop = (demand * lead_time) + safety_stock_qty
-            
-            # 3. Stock Físico + Compras en Tránsito
             virtual_stock = product.qty_available + product.incoming_qty
             
-            # 4. Decisión: ¿Necesitamos comprar?
             if virtual_stock <= rop:
-                # Calcular cuánto necesitamos para cubrir los días deseados
                 target_stock = (demand * days_to_cover) + safety_stock_qty
-                qty_to_order = target_stock - virtual_stock
+                raw_qty_to_order = target_stock - virtual_stock
                 
-                # 5. Aplicar Restricción del Proveedor (MOQ)
+                raw_po_qty = product.uom_id._compute_quantity(
+                    raw_qty_to_order, 
+                    product.uom_po_id, 
+                    round=False
+                )
+                
+                qty_to_order = math.ceil(raw_po_qty)
+                
                 if qty_to_order < moq:
                     qty_to_order = moq
                     
-                # 6. Lógica de Licitación (Múltiples proveedores) vs Compra Directa
+                actual_price = product.last_purchase_cost if product.last_purchase_cost > 0.0 else primary_seller.price
+
                 if len(sellers) > 1:
-                    # Guardamos la info para crear un Acuerdos de Compra (Tender)
                     tenders_to_create.append({
                         'product_id': product.id,
                         'product_qty': qty_to_order,
+                        'product_uom': product.uom_po_id.id,
                         'sellers': sellers
                     })
                 else:
-                    # Agrupamos por proveedor para hacer una sola Orden de Compra multiproducto
                     if primary_seller.partner_id.id not in po_lines_by_supplier:
                         po_lines_by_supplier[primary_seller.partner_id.id] = []
                         
                     po_lines_by_supplier[primary_seller.partner_id.id].append({
                         'product_id': product.id,
                         'product_qty': qty_to_order,
-                        'price_unit': primary_seller.price,
+                        'product_uom': product.uom_po_id.id,
+                        'price_unit': actual_price,
                     })
 
-        # 7. Ejecutar la creación de documentos en la base de datos
         self._create_purchase_orders(po_lines_by_supplier)
         self._create_purchase_tenders(tenders_to_create)
 
-    # @api.model
-    # def _create_purchase_orders(self, po_data):
-    #     for partner_id, lines in po_data.items():
-    #         order_lines = []
-    #         for line in lines:
-    #             order_lines.append((0, 0, {
-    #                 'product_id': line['product_id'],
-    #                 'product_qty': line['product_qty'],
-    #                 'price_unit': line['price_unit'],
-    #             }))
-                
-    #         self.create({
-    #             'partner_id': partner_id,
-    #             'order_line': order_lines,
-    #             'state': 'draft',
-    #             'origin': 'Smart Replenishment (Automático)',
-    #             'is_auto_generated': True
-    #         })
+    @api.model
+    def _create_purchase_orders(self, po_data):
+        PurchaseOrder = self.env['purchase.order']
+        for partner_id, lines in po_data.items():
+            order_lines = []
+            for line in lines:
+                order_lines.append((0, 0, {
+                    'product_id': line['product_id'],
+                    'product_qty': line['product_qty'],
+                    'product_uom': line.get('product_uom'),
+                    'price_unit': line['price_unit'],
+                }))
+            PurchaseOrder.create({
+                'partner_id': partner_id,
+                'order_line': order_lines,
+                'state': 'draft',
+                'origin': 'Smart Replenishment (Automático)',
+                'is_auto_generated': True
+            })
 
     @api.model
     def _create_purchase_tenders(self, tenders_data):
         Requisition = self.env['purchase.requisition']
+        RequisitionType = self.env['purchase.requisition.type']
+        
+        req_type = self.env.ref('purchase_requisition.type_multi', raise_if_not_found=False)
+        if not req_type:
+            req_type = RequisitionType.search([], limit=1)
+        if not req_type:
+            req_type = RequisitionType.create({
+                'name': 'Licitación (Call for Tender)',
+                'quantity_copy': 'none'
+            })
+
         for tender in tenders_data:
             Requisition.create({
-                'type_id': self.env.ref('purchase_requisition.type_multi', raise_if_not_found=False).id if self.env.ref('purchase_requisition.type_multi', raise_if_not_found=False) else False,
+                'type_id': req_type.id,
                 'line_ids': [(0, 0, {
                     'product_id': tender['product_id'],
                     'product_qty': tender['product_qty'],
+                    'product_uom_id': tender.get('product_uom'),
                 })],
                 'origin': 'Licitación Automática (Smart Replenishment)',
-                'is_auto_generated': True  # <--- Aquí inyectamos el flag para la licitación
+                'is_auto_generated': True
             })
 
+    
     @api.model
     def _cron_reclassify_abc(self, days_back=30):
         """
-        Evalúa las ventas de los últimos X días, aplica Pareto (80/15/5) 
-        y reclasifica los productos, guardando el historial.
+        Evaluate sales over the last X days, apply the Pareto principle (80/15/5), 
+        and reclassify the products, saving the history.
         """
         # 1. Consulta SQL para obtener los ingresos por producto de forma masiva y rápida
         query = """
@@ -217,8 +227,8 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_log_daily_stockouts(self):
         """
-        Calcula y registra los productos sin stock al final del día.
-        Usa Raw SQL para saltarse el ORM y evitar problemas de rendimiento.
+        Calculate and record out-of-stock items at the end of the day.
+        Use raw SQL to bypass the ORM and avoid performance issues.
         """
         query = """
             INSERT INTO product_stock_daily_log 
@@ -253,7 +263,7 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_calculate_demand_forecast(self, days_back=30):
         """
-        Calcula la demanda real y proyecta la futura usando Suavizado Exponencial.
+        Calculate actual demand and forecast future demand using exponential smoothing.
         """
         today = fields.Date.today()
         start_date = today - relativedelta(days=days_back)

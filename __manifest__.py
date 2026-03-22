@@ -29,7 +29,17 @@ Key Features:
         'views/product_views.xml',
         'views/smart_replenishment_views.xml',
         'views/purchase_order_views.xml',
+        'views/product_rotation_history_views.xml',
+        'wizard/smart_stock_report_wizard_views.xml',
     ],
+
+    'assets': {
+        'web.assets_backend': [
+            'smart_stock/static/lib/apexcharts.js',
+            'smart_stock/static/src/js/smart_stock_dashboard.js',
+            'smart_stock/static/src/xml/smart_stock_dashboard.xml',
+        ],
+
     'installable': True,
     'application': True,
     'license': 'LGPL-3',

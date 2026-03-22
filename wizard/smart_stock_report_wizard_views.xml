@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_smart_stock_report_wizard_form" model="ir.ui.view">
+        <field name="name">smart.stock.report.wizard.form</field>
+        <field name="model">smart.stock.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Smart Stock Report">
+                <group invisible="excel_file != False">
+                    <group string="Date Range">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group string="Filters (Optional)">
+                        <field name="category_id" options="{'no_create': True}"/>
+                        <field name="product_id" options="{'no_create': True}"/>
+                        <field name="vendor_id" options="{'no_create': True}" context="{'res_partner_search_mode': 'supplier'}"/>
+                    </group>
+                </group>
+                <div invisible="excel_file == False">
+                    <h2>Report Generated Successfully!</h2>
+                    <p>Click the link below to download your Excel file.</p>
+                    <field name="file_name" invisible="1"/>
+                    <field name="excel_file" readonly="1" filename="file_name" widget="binary"/>
+                </div>
+                <footer>
+                    <button string="Generate Excel" name="action_generate_excel" type="object" class="btn-primary" invisible="excel_file != False"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_smart_stock_report_wizard" model="ir.actions.act_window">
+        <field name="name">Smart Stock Excel Report</field>
+        <field name="res_model">smart.stock.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_smart_stock_report_wizard" 
+              name="Rotation Excel Report" 
+              parent="smart_stock.menu_smart_replenishment_root" 
+              action="action_smart_stock_report_wizard" 
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="smart_stock.DashboardTemplate" owl="1">
+        <div class="o_action_manager">
+            <div class="container-fluid py-4" style="background-color: #f9f9f9; min-height: 100vh;">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 style="color: #00A09D; font-weight: bold;"><i class="fa fa-dashboard"></i> Smart Stock Overview</h2>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3 cursor-pointer" t-on-click="() => this.viewNeedsReplenishment()">
+                        <div class="card shadow-sm border-0" style="border-left: 5px solid #E53935 !important;">
+                            <div class="card-body">
+                                <h5 class="text-muted">Requires Replenishment</h5>
+                                <h2 class="text-danger"><t t-esc="state.counts.replenish_count"/> Products</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 cursor-pointer" t-on-click="() => this.viewClass('a')">
+                        <div class="card shadow-sm border-0" style="border-left: 5px solid #4CAF50 !important;">
+                            <div class="card-body">
+                                <h5 class="text-muted">Class A (High)</h5>
+                                <h2 class="text-success"><t t-esc="state.counts.class_a"/> Products</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 cursor-pointer" t-on-click="() => this.viewClass('b')">
+                        <div class="card shadow-sm border-0" style="border-left: 5px solid #FF9800 !important;">
+                            <div class="card-body">
+                                <h5 class="text-muted">Class B (Medium)</h5>
+                                <h2 class="text-warning"><t t-esc="state.counts.class_b"/> Products</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 cursor-pointer" t-on-click="() => this.viewClass('c')">
+                        <div class="card shadow-sm border-0" style="border-left: 5px solid #9E9E9E !important;">
+                            <div class="card-body">
+                                <h5 class="text-muted">Class C (Low)</h5>
+                                <h2 class="text-secondary"><t t-esc="state.counts.class_c"/> Products</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div t-ref="chart_rotation"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div t-ref="chart_revenue"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -4,19 +4,19 @@
         <field name="name">smart.replenishment.search</field>
         <field name="model">smart.replenishment.dashboard</field>
         <field name="arch" type="xml">
-            <search string="Análisis de Rotación">
-                <filter string="Clase A (Alta Rotación)" name="filter_class_a" domain="[('rotation_classification', '=', 'a')]"/>
-                <filter string="Clase B (Media Rotación)" name="filter_class_b" domain="[('rotation_classification', '=', 'b')]"/>
-                <filter string="Clase C (Baja Rotación)" name="filter_class_c" domain="[('rotation_classification', '=', 'c')]"/>
+            <search string="Rotation Analysis">
+                <filter string="Class A (High Rotation)" name="filter_class_a" domain="[('rotation_classification', '=', 'a')]"/>
+                <filter string="Class B (Medium Rotation)" name="filter_class_b" domain="[('rotation_classification', '=', 'b')]"/>
+                <filter string="Class C (Low Rotation)" name="filter_class_c" domain="[('rotation_classification', '=', 'c')]"/>
                 <separator/>
-                <filter string="Este Mes" name="this_month" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
-                <filter string="Este Año" name="this_year" domain="[('date', '&gt;=', context_today().strftime('%Y-01-01'))]"/>
+                <filter string="This Month" name="this_month" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <filter string="This Year" name="this_year" domain="[('date', '&gt;=', context_today().strftime('%Y-01-01'))]"/>
                 
-                <group expand="1" string="Agrupar Por">
-                    <filter string="Producto" name="group_product" context="{'group_by':'product_id'}"/>
-                    <filter string="Categoría" name="group_category" context="{'group_by':'categ_id'}"/>
-                    <filter string="Clasificación" name="group_classification" context="{'group_by':'rotation_classification'}"/>
-                    <filter string="Fecha (Mes)" name="group_date_month" context="{'group_by':'date:month'}"/>
+                <group expand="1" string="Group By">
+                    <filter string="Product" name="group_product" context="{'group_by':'product_id'}"/>
+                    <filter string="Category" name="group_category" context="{'group_by':'categ_id'}"/>
+                    <filter string="Classification" name="group_classification" context="{'group_by':'rotation_classification'}"/>
+                    <filter string="Date (Month)" name="group_date_month" context="{'group_by':'date:month'}"/>
                 </group>
             </search>
         </field>
@@ -26,7 +26,7 @@
         <field name="name">smart.replenishment.graph</field>
         <field name="model">smart.replenishment.dashboard</field>
         <field name="arch" type="xml">
-            <graph string="Análisis de Ingresos por Rotación" type="bar">
+            <graph string="Revenue by Rotation Analysis" type="bar">
                 <field name="product_id"/>
                 <field name="revenue" type="measure"/>
             </graph>
@@ -37,7 +37,7 @@
         <field name="name">smart.replenishment.pivot</field>
         <field name="model">smart.replenishment.dashboard</field>
         <field name="arch" type="xml">
-            <pivot string="Análisis de Rotación">
+            <pivot string="Rotation Analysis">
                 <field name="rotation_classification" type="row"/>
                 <field name="product_id" type="row"/>
                 <field name="date" interval="month" type="col"/>
@@ -48,22 +48,48 @@
     </record>
 
     <record id="action_smart_replenishment_dashboard" model="ir.actions.act_window">
-            <field name="name">Análisis de Rotación</field>
-            <field name="res_model">smart.replenishment.dashboard</field>
-            <field name="view_mode">pivot,graph</field>
-            <field name="search_view_id" ref="view_smart_replenishment_search"/>
-            <field name="context">{'search_default_this_month': 1}</field>
-        </record>
+        <field name="name">Rotation Analysis</field>
+        <field name="res_model">smart.replenishment.dashboard</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_smart_replenishment_search"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+    </record>
 
-        <menuitem id="menu_smart_replenishment_root" 
-                name="Smart Stock" 
-                parent="purchase.menu_purchase_root" 
-                sequence="15"/>
+    <record id="view_product_replenish_tree" model="ir.ui.view">
+        <field name="name">product.replenish.tree.smart.stock</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <tree string="Requires Replenishment" decoration-danger="qty_available &lt;= 0">
+                <field name="default_code"/>
+                <field name="name"/>
+                <field name="rotation_classification" optional="show"/>
+                <field name="qty_available" string="Stock Actual"/>
+                <field name="current_forecasted_demand" string="Demanda (Actual)"/>
+                <field name="last_forecasted_demand" string="Demanda (Anterior)" optional="hide"/>
+                <field name="last_purchase_cost" string="Último Costo" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
 
-        <menuitem id="menu_smart_replenishment_dashboard" 
-                name="Dashboard de Rotación" 
-                parent="menu_smart_replenishment_root" 
-                action="action_smart_replenishment_dashboard" 
-                sequence="1"/>
+    <record id="action_smart_stock_main_dashboard" model="ir.actions.client">
+        <field name="name">Smart Stock Dashboard</field>
+        <field name="tag">smart_stock_main_dashboard</field>
+    </record>
 
+    <menuitem id="menu_smart_replenishment_root" 
+              name="Smart Stock" 
+              parent="purchase.menu_purchase_root" 
+              sequence="15"/>
+
+    <menuitem id="menu_smart_replenishment_dashboard" 
+              name="Rotation Dashboard" 
+              parent="menu_smart_replenishment_root" 
+              action="action_smart_replenishment_dashboard" 
+              sequence="1"/>
+
+    <menuitem id="menu_smart_replenishment_main_dashboard" 
+              name="Main Dashboard" 
+              parent="menu_smart_replenishment_root" 
+              action="action_smart_stock_main_dashboard" 
+              sequence="0"/>
 </odoo>

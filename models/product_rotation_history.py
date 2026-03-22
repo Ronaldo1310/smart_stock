@@ -2,31 +2,31 @@ from odoo import models, fields, api
 
 class ProductRotationHistory(models.Model):
     _name = 'product.rotation.history'
-    _description = 'Historial de Clasificación ABC'
+    _description = 'ABC Standings History'
     _order = 'date desc'
 
     product_id = fields.Many2one(
         'product.product', 
-        string='Producto', 
+        string='Product', 
         required=True, 
         ondelete='cascade'
     )
     date = fields.Date(
-        string='Fecha de Evaluación', 
+        string='Date of Evaluation', 
         default=fields.Date.context_today, 
         required=True
     )
     old_classification = fields.Selection([
-        ('a', 'Clase A'),
-        ('b', 'Clase B'),
-        ('c', 'Clase C'),
-        ('none', 'Sin Clasificar')
-    ], string='Clasificación Anterior')
+        ('a', 'Class A'),
+        ('b', 'Class B'),
+        ('c', 'Class C'),
+        ('none', 'Not Classified')
+    ], string='Previous Classification')
     
     new_classification = fields.Selection([
-        ('a', 'Clase A'),
-        ('b', 'Clase B'),
-        ('c', 'Clase C')
-    ], string='Nueva Clasificación', required=True)
+        ('a', 'Class A'),
+        ('b', 'Class B'),
+        ('c', 'Class C')
+    ], string='New Classification', required=True)
     
-    revenue_in_period = fields.Float(string='Ingresos en el Periodo')
+    revenue_in_period = fields.Float(string='Revenue in the Period')
