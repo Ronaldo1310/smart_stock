@@ -46,7 +46,7 @@ class SmartReplenishmentDashboard(models.Model):
         class_b = self.env['product.template'].search_count([('rotation_classification', '=', 'b')])
         class_c = self.env['product.template'].search_count([('rotation_classification', '=', 'c')])
 
-        # 2. Productos que requieren reabastecimiento (Calculado al vuelo)
+        # 2. Productos que requieren reabastecimiento
         products = self.env['product.product'].search([
             ('current_forecasted_demand', '>', 0),
             ('seller_ids', '!=', False)
@@ -59,7 +59,7 @@ class SmartReplenishmentDashboard(models.Model):
             if virtual_stock <= rop:
                 replenish_ids.append(p.id)
 
-        # 3. Top 10 Rotación (Cantidades) - Usamos la vista SQL actual para este mes
+        # 3. Top 10 Rotación (Cantidades)
         self.env.cr.execute("""
             SELECT pt.name, SUM(sm.product_uom_qty) as total_qty
             FROM stock_move sm
@@ -72,7 +72,7 @@ class SmartReplenishmentDashboard(models.Model):
         """)
         top_rotation = self.env.cr.dictfetchall()
 
-        # 4. Top 10 Ingresos - Usamos la vista SQL actual para este mes
+        # 4. Top 10 Ingresos
         self.env.cr.execute("""
             SELECT pt.name, SUM(sm.product_uom_qty * pt.list_price) as total_revenue
             FROM stock_move sm
@@ -85,6 +85,15 @@ class SmartReplenishmentDashboard(models.Model):
         """)
         top_revenue = self.env.cr.dictfetchall()
 
+        # --- CORRECCIÓN: Función auxiliar para extraer el nombre en texto plano ---
+        user_lang = self.env.user.lang or 'es_ES'
+        
+        def parse_name(name_field):
+            if isinstance(name_field, dict):
+                # Intenta sacar el idioma del usuario, si no, saca el primer idioma disponible
+                return name_field.get(user_lang, list(name_field.values())[0] if name_field else 'Unknown')
+            return name_field or 'Unknown'
+
         return {
             'counts': {
                 'class_a': class_a,
@@ -94,11 +103,11 @@ class SmartReplenishmentDashboard(models.Model):
                 'replenish_ids': replenish_ids,
             },
             'top_rotation': {
-                'labels': [r['name'] for r in top_rotation],
+                'labels': [parse_name(r['name']) for r in top_rotation],
                 'data': [r['total_qty'] for r in top_rotation]
             },
             'top_revenue': {
-                'labels': [r['name'] for r in top_revenue],
+                'labels': [parse_name(r['name']) for r in top_revenue],
                 'data': [r['total_revenue'] for r in top_revenue]
             }
         }

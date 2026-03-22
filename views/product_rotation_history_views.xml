@@ -4,12 +4,12 @@
         <field name="name">product.rotation.history.tree</field>
         <field name="model">product.rotation.history</field>
         <field name="arch" type="xml">
-            <tree string="Historial de Clasificación ABC" create="0" edit="0" delete="0" decoration-success="new_classification=='a'" decoration-warning="new_classification=='b'" decoration-muted="new_classification=='c'">
+            <tree string="ABC Ranking History" create="0" edit="0" delete="0" decoration-success="new_classification=='a'" decoration-warning="new_classification=='b'" decoration-muted="new_classification=='c'">
                 <field name="date"/>
                 <field name="product_id"/>
                 <field name="old_classification"/>
                 <field name="new_classification"/>
-                <field name="revenue_in_period" string="Ingresos del Periodo"/>
+                <field name="revenue_in_period" string="Revenue for the Period"/>
             </tree>
         </field>
     </record>
@@ -18,12 +18,12 @@
         <field name="name">product.rotation.history.search</field>
         <field name="model">product.rotation.history</field>
         <field name="arch" type="xml">
-            <search string="Buscar Historial">
-                <field name="product_id" string="Producto"/>
+            <search string="Search History">
+                <field name="product_id" string="Product"/>
                 <filter string="Promoted to Class A" name="promoted_to_a" domain="[('new_classification', '=', 'a')]"/>
                 <filter string="Demoted to Class C" name="downgraded_to_c" domain="[('new_classification', '=', 'c')]"/>
                 <separator/>
-                <group expand="0" string="Agrupar Por">
+                <group expand="0" string="Group By">
                     <filter string="Product" name="group_product" context="{'group_by':'product_id'}"/>
                     <filter string="Month of Evaluation" name="group_date" context="{'group_by':'date:month'}"/>
                     <filter string="New Classification" name="group_new_class" context="{'group_by':'new_classification'}"/>
@@ -33,7 +33,7 @@
     </record>
 
     <record id="action_product_rotation_history" model="ir.actions.act_window">
-        <field name="name">Historial de Clasificación ABC</field>
+        <field name="name">ABC Ranking History</field>
         <field name="res_model">product.rotation.history</field>
         <field name="view_mode">tree</field>
         <field name="search_view_id" ref="view_product_rotation_history_search"/>
