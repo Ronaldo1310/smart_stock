@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="smart_stock.AnalyticsTemplate" owl="1">
+        <div class="o_action_manager">
+            <div class="container-fluid py-4" style="background-color: #f0f2f5; min-height: 100vh;">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 style="color: #333; font-weight: 600;">Inventory Analytics</h2>
+                        <p class="text-muted">Financial and distribution overview</p>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase mb-2">Total Products</h6>
+                                <h3 class="mb-0" style="color: #333;"><t t-esc="state.kpis.total_products"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase mb-2">Stock Valuation</h6>
+                                <h3 class="mb-0" style="color: #00A09D;">$<t t-esc="state.kpis.total_valuation.toLocaleString()"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase mb-2">Class A Items</h6>
+                                <h3 class="mb-0" style="color: #4CAF50;"><t t-esc="state.kpis.class_a_count"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <h6 class="text-muted text-uppercase mb-2">Draft Auto POs Value</h6>
+                                <h3 class="mb-0" style="color: #FF9800;">$<t t-esc="state.kpis.pending_po_value.toLocaleString()"/></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <div t-ref="chart_trend"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 rounded-lg">
+                            <div class="card-body">
+                                <div t-ref="chart_donut"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

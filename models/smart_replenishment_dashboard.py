@@ -111,3 +111,59 @@ class SmartReplenishmentDashboard(models.Model):
                 'data': [r['total_revenue'] for r in top_revenue]
             }
         }
+    
+    @api.model
+    def get_secondary_dashboard_data(self):
+        # 1. KPIs
+        total_products = self.env['product.product'].search_count([('type', '=', 'product')])
+        
+        # CORRECCIÓN: Usamos el ORM para la valoración porque 'qty_available' es calculado.
+        # Buscamos productos que tengan stock positivo y multiplicamos por su costo.
+        products_in_stock = self.env['product.product'].search([
+            ('type', '=', 'product'), 
+            ('qty_available', '>', 0)
+        ])
+        total_valuation = sum(p.qty_available * p.standard_price for p in products_in_stock)
+
+        # Valor de las Órdenes de Compra Automáticas en Borrador
+        # (amount_total sí es una columna real en BD, así que el SQL rápido funciona perfecto aquí)
+        self.env.cr.execute("""
+            SELECT SUM(amount_total) 
+            FROM purchase_order 
+            WHERE state = 'draft' AND is_auto_generated = TRUE
+        """)
+        pending_po_value = self.env.cr.fetchone()[0] or 0.0
+
+        class_a_count = self.env['product.template'].search_count([('rotation_classification', '=', 'a')])
+
+        # 2. Gráfico Donut: Distribución ABC
+        class_b_count = self.env['product.template'].search_count([('rotation_classification', '=', 'b')])
+        class_c_count = self.env['product.template'].search_count([('rotation_classification', '=', 'c')])
+
+        # 3. Gráfico de Líneas: Tendencia de Ingresos (Últimos 6 meses)
+        self.env.cr.execute("""
+            SELECT to_char(date_trunc('month', sm.date), 'Mon YYYY') as month,
+                   SUM(sm.product_uom_qty * pt.list_price) as total
+            FROM stock_move sm
+            JOIN product_product pp ON sm.product_id = pp.id
+            JOIN product_template pt ON pp.product_tmpl_id = pt.id
+            WHERE sm.state = 'done' AND sm.location_dest_id IN (SELECT id FROM stock_location WHERE usage = 'customer')
+              AND sm.date >= date_trunc('month', CURRENT_DATE - INTERVAL '5 months')
+            GROUP BY date_trunc('month', sm.date)
+            ORDER BY date_trunc('month', sm.date) ASC
+        """)
+        trend_data = self.env.cr.dictfetchall()
+
+        return {
+            'kpis': {
+                'total_products': total_products,
+                'total_valuation': round(total_valuation, 2),
+                'pending_po_value': round(pending_po_value, 2),
+                'class_a_count': class_a_count,
+            },
+            'abc_donut': [class_a_count, class_b_count, class_c_count],
+            'revenue_trend': {
+                'labels': [r['month'] for r in trend_data],
+                'data': [round(r['total'], 2) for r in trend_data]
+            }
+        }
