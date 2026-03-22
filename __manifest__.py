@@ -37,6 +37,8 @@ Key Features:
             'smart_stock/static/lib/apexcharts.js',
             'smart_stock/static/src/js/smart_stock_dashboard.js',
             'smart_stock/static/src/xml/smart_stock_dashboard.xml',
+            'smart_stock/static/src/js/smart_stock_analytics.js',
+            'smart_stock/static/src/xml/smart_stock_analytics.xml',
         ],
     },
     
