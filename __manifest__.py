@@ -39,6 +39,7 @@ Key Features:
             'smart_stock/static/src/js/smart_stock_dashboard.js',
             'smart_stock/static/src/xml/smart_stock_dashboard.xml',
         ],
+    },
 
     'installable': True,
     'application': True,
