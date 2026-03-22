@@ -33,7 +33,7 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_generate_smart_replenishment(self, days_to_cover=30):
         products = self.search([
-            ('type', '=', 'product'), 
+            ('is_storable', '=', True), 
             ('current_forecasted_demand', '>', 0),
             ('seller_ids', '!=', False)
         ])
@@ -113,28 +113,35 @@ class ProductProduct(models.Model):
     @api.model
     def _create_purchase_tenders(self, tenders_data):
         Requisition = self.env['purchase.requisition']
-        RequisitionType = self.env['purchase.requisition.type']
         
-        req_type = self.env.ref('purchase_requisition.type_multi', raise_if_not_found=False)
-        if not req_type:
-            req_type = RequisitionType.search([], limit=1)
-        if not req_type:
-            req_type = RequisitionType.create({
-                'name': 'Licitación (Call for Tender)',
-                'quantity_copy': 'none'
-            })
-
         for tender in tenders_data:
-            Requisition.create({
-                'type_id': req_type.id,
+            vals = {
                 'line_ids': [(0, 0, {
                     'product_id': tender['product_id'],
                     'product_qty': tender['product_qty'],
                     'product_uom_id': tender.get('product_uom'),
                 })],
-                'origin': 'Licitación Automática (Smart Replenishment)',
                 'is_auto_generated': True
-            })
+            }
+            
+            # Compatibilidad Odoo 17: Si el modelo de "Tipos" existe, lo usamos.
+            if 'purchase.requisition.type' in self.env:
+                RequisitionType = self.env['purchase.requisition.type']
+                req_type = self.env.ref('purchase_requisition.type_multi', raise_if_not_found=False)
+                if not req_type:
+                    req_type = RequisitionType.search([], limit=1)
+                if not req_type:
+                    req_type = RequisitionType.create({
+                        'name': 'Licitación (Call for Tender)',
+                        'quantity_copy': 'none'
+                    })
+                vals['type_id'] = req_type.id
+                
+            # Compatibilidad Odoo 18: El campo 'origin' fue eliminado del modelo, verificamos si existe
+            if 'origin' in Requisition._fields:
+                vals['origin'] = 'Licitación Automática (Smart Replenishment)'
+                
+            Requisition.create(vals)
 
     
     @api.model
@@ -205,7 +212,7 @@ class ProductProduct(models.Model):
         # deben degradarse a Clase C.
         sold_product_ids = [row['product_id'] for row in results]
         unsold_products = self.search([
-            ('type', '=', 'product'), 
+            ('is_storable', '=', True), 
             ('id', 'not in', sold_product_ids),
             ('product_tmpl_id.rotation_classification', 'in', ['a', 'b'])
         ])
@@ -251,7 +258,7 @@ class ProductProduct(models.Model):
                 GROUP BY sq.product_id
             ) AS stock ON stock.product_id = pp.id
             WHERE 
-                pt.type = 'product' 
+                pt.is_storable = TRUE 
                 AND pt.active = TRUE
                 AND COALESCE(stock.free_qty, 0) <= 0
             ON CONFLICT DO NOTHING; -- Evita duplicados si el cron corre dos veces el mismo día
@@ -269,7 +276,7 @@ class ProductProduct(models.Model):
         start_date = today - relativedelta(days=days_back)
         
         # 1. Obtener los productos que vamos a analizar (almacenables y activos)
-        products = self.search([('type', '=', 'product')])
+        products = self.search([('is_storable', '=', True)])
         
         for product in products:
             # Si es estacional, la lógica debería buscar el mismo periodo del año pasado.

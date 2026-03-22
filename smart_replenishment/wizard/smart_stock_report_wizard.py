@@ -23,7 +23,7 @@ class SmartStockReportWizard(models.TransientModel):
 
     def action_generate_excel(self):
         # 1. ORM: Filtrar productos basados en la selección del usuario
-        domain = [('type', '=', 'product')]
+        domain = [('type', '=', 'consu')]
         if self.product_id:
             domain.append(('id', '=', self.product_id.id))
         if self.category_id:

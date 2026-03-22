@@ -120,7 +120,7 @@ class SmartReplenishmentDashboard(models.Model):
         # CORRECCIÓN: Usamos el ORM para la valoración porque 'qty_available' es calculado.
         # Buscamos productos que tengan stock positivo y multiplicamos por su costo.
         products_in_stock = self.env['product.product'].search([
-            ('type', '=', 'product'), 
+            ('is_storable', '=', True), 
             ('qty_available', '>', 0)
         ])
         total_valuation = sum(p.qty_available * p.standard_price for p in products_in_stock)
