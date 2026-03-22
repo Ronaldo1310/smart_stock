@@ -39,7 +39,7 @@
 
     <menuitem id="menu_smart_stock_report_wizard" 
               name="Rotation Excel Report" 
-              parent="smart_stock.menu_smart_replenishment_root" 
+              parent="smart_replenishment.menu_smart_replenishment_root" 
               action="action_smart_stock_report_wizard" 
               sequence="10"/>
 </odoo>

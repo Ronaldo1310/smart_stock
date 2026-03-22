@@ -50,7 +50,7 @@
 
     <menuitem id="menu_product_rotation_history" 
               name="ABC History" 
-              parent="smart_stock.menu_smart_replenishment_root" 
+              parent="smart_replenishment.menu_smart_replenishment_root" 
               action="action_product_rotation_history" 
               sequence="20"/>
 </odoo>

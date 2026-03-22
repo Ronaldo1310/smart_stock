@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="smart_stock.DashboardTemplate" owl="1">
+    <t t-name="smart_replenishment.DashboardTemplate" owl="1">
         <div class="o_action_manager">
             <div class="container-fluid py-4" style="background-color: #f9f9f9; min-height: 100vh;">
                 <div class="row mb-4">

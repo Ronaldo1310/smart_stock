@@ -78,5 +78,5 @@ class SmartStockAnalytics extends Component {
     }
 }
 
-SmartStockAnalytics.template = "smart_stock.AnalyticsTemplate";
+SmartStockAnalytics.template = "smart_replenishment.AnalyticsTemplate";
 registry.category("actions").add("smart_stock_analytics_dashboard", SmartStockAnalytics);

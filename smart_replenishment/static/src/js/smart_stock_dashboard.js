@@ -67,7 +67,7 @@ class SmartStockDashboard extends Component {
             domain: [['id', 'in', this.state.counts.replenish_ids]],
             context: {
                 // Forzamos a mostrar los campos relevantes por defecto
-                tree_view_ref: 'smart_stock.view_product_replenish_tree'
+                tree_view_ref: 'smart_replenishment.view_product_replenish_tree'
             }
         });
     }
@@ -104,5 +104,5 @@ class SmartStockDashboard extends Component {
     }
 }
 
-SmartStockDashboard.template = "smart_stock.DashboardTemplate";
+SmartStockDashboard.template = "smart_replenishment.DashboardTemplate";
 registry.category("actions").add("smart_stock_main_dashboard", SmartStockDashboard);
