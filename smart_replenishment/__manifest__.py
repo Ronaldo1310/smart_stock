@@ -35,11 +35,11 @@ Key Features:
     ],
     'assets': {
         'web.assets_backend': [
-            'smart_stock/static/lib/apexcharts.js',
-            'smart_stock/static/src/js/smart_stock_dashboard.js',
-            'smart_stock/static/src/xml/smart_stock_dashboard.xml',
-            'smart_stock/static/src/js/smart_stock_analytics.js',
-            'smart_stock/static/src/xml/smart_stock_analytics.xml',
+            'smart_replenishment/static/lib/apexcharts.js',
+            'smart_replenishment/static/src/js/smart_stock_dashboard.js',
+            'smart_replenishment/static/src/xml/smart_stock_dashboard.xml',
+            'smart_replenishment/static/src/js/smart_stock_analytics.js',
+            'smart_replenishment/static/src/xml/smart_stock_analytics.xml',
         ],
     },
     
