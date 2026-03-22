@@ -1,7 +1,7 @@
 {
     'name': 'Smart Stock Replenishment',
-    'version': '1.0.0',
-    'category': 'Inventory/Purchase',
+    'version': '17.0.1.0.0',
+    'category': 'Inventory/Inventory',
     'summary': 'Data-driven inventory replenishment, demand forecasting, and automated purchasing.',
     'description': """
 Smart Stock Replenishment
@@ -17,6 +17,7 @@ Key Features:
     """,
     'author': 'Freddy Torres - Lixie Studio Digital, C.A.',
     'website': 'https://www.lixie.io',
+    'support': 'r.torres@lixie.io',
     'depends': [
         'base', 
         'stock', 
@@ -41,7 +42,6 @@ Key Features:
             'smart_stock/static/src/xml/smart_stock_analytics.xml',
         ],
     },
-    
     
     'images': ['static/description/banner_screenshot.png'], 
     'price': 149.00,
