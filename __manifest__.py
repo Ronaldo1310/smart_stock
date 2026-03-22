@@ -32,7 +32,6 @@ Key Features:
         'views/product_rotation_history_views.xml',
         'wizard/smart_stock_report_wizard_views.xml',
     ],
-
     'assets': {
         'web.assets_backend': [
             'smart_stock/static/lib/apexcharts.js',
@@ -40,8 +39,13 @@ Key Features:
             'smart_stock/static/src/xml/smart_stock_dashboard.xml',
         ],
     },
-
+    
+    
+    'images': ['static/description/banner.png'], 
+    'price': 149.00,
+    'currency': 'USD',
+    'license': 'OPL-1', 
+    
     'installable': True,
     'application': True,
-    'license': 'LGPL-3',
 }

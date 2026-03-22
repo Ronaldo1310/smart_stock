@@ -30,10 +30,17 @@
             <notebook position="inside">
                 <page string="Smart Replenishment">
                     <group>
-                        <group string="Actual Costs (Variant)">
+                        <group string="Classification">
+                            <field name="rotation_classification" readonly="1"/>
+                            <field name="is_seasonal"/>
+                        </group>
+                        <group string="Replenishment Variables">
+                            <field name="safety_stock_days"/>
                             <field name="last_purchase_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                         </group>
-                        <group string="Demand Forecast (Variant)">
+                    </group>
+                    <group>
+                        <group string="Demand Forecast (Variant Level)">
                             <field name="smoothing_alpha"/>
                             <field name="last_forecasted_demand"/>
                             <field name="current_forecasted_demand"/>
