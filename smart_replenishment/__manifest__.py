@@ -15,7 +15,7 @@ Key Features:
 - **Smart Purchasing:** Automatically generates Draft Purchase Orders or Call for Bids (Tenders) factoring in forecasted demand, Lead Times, Safety Stock, and MOQs.
 - **High-Performance Dashboard:** Includes a SQL-backed dynamic dashboard to analyze revenue, product rotation, and performance without slowing down the ORM.
     """,
-    'author': 'Freddy Torres - Lixie Studio Digital, C.A.',
+    'author': 'Freddy Torres',
     'website': 'https://www.lixie.io',
     'support': 'r.torres@lixie.io',
     'depends': [
